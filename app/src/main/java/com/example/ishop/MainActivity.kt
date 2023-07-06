@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
         getProducts()
     }
     fun getProducts(){
-        val apiclient = Apiclient.buildClient(ApiInterface::class.java)
-        val request = apiclient.getProducts()
+        val Apiclient = Apiclient.buildClient(ApiInterface::class.java)
+        val request = Apiclient.getProducts()
         request.enqueue(object : Callback<ProductsResponse> {
             override fun onResponse(call: Call<ProductsResponse>, response: Response<ProductsResponse>) {
               if(response.isSuccessful){
