@@ -1,76 +1,57 @@
-package com.rosekn.myshop
+package com.example.ishop
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.Adapter
-import android.widget.GridLayout
-import android.widget.Toast
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.ishop.Apiclient
-import com.example.ishop.ProductsResponse
-import com.example.ishop.databinding.ActivityMainBinding
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.ishop.databinding.ProductListBinding
+import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.CropCircleTransformation
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var productAdapter: Adapter
-    lateinit var binding: ActivityMainBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding= ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        val recyclerView: RecyclerView = binding.rvProducts
-        val gridLayoutManager = GridLayoutManager(this, 2)
-        recyclerView.layoutManager = gridLayoutManager
-        productAdapter = Adapter(emptyList())
-        recyclerView.adapter = Adapter
+class Adapter(private var productList: List<Product>) : RecyclerView.Adapter<Adapter.ProductViewHolder>(),
+    Adapter {
+    fun updateProducts(newProducts: List<Product>) {
+        productList = newProducts
+        notifyDataSetChanged()
     }
 
-    override fun onResume() {
-        super.onResume()
-        getProducts()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
+        val binding = ProductListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ProductViewHolder(binding)
     }
 
-    private fun getProducts() {
-        val apiclient = Apiclient.buildClient(ApiInterface::class.java)
-        val request = apiclient.getProducts()
-        request.enqueue(object : Callback<ProductsResponse> {
-            override fun onResponse(call: Call<ProductsResponse>, response: Response<ProductsResponse>) {
-                if (response.isSuccessful) {
-                    val products = response.body()?.products
-                    if (products != null) {
-                        productAdapter.updateProducts(products)
-                    }
-                    Toast.makeText(
-                        baseContext,
-                        "Fetched ${products?.size} products",
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(baseContext, response.errorBody()?.string(), Toast.LENGTH_LONG)
-                        .show()
-                }
-            }
+    override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+        val product = productList[position]
+        holder.bind(product)
+    }
 
-            override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
-                Toast.makeText(baseContext, t.message, Toast.LENGTH_LONG).show()
+    override fun getItemCount(): Int {
+        return productList.size
+    }
+
+    inner class ProductViewHolder(private val binding: ProductListBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(product: Product) {
+            binding.apply {
+                tvId.text = product.id.toString()
+                tvTitle.text = product.title
+                tvDescription.text = product.description
+                tvPrice.text = product.price.toString()
+                tvRating.text = product.rating.toString()
+                tvStock.text = product.stock.toString()
+
+
+                Picasso.get()
+                    .load(product.thumbnail)
+                    .resize(250,250)
+                    .centerCrop()
+                    .transform(CropCircleTransformation())
+                    .into(binding.ivProduct)
+
+
+
+
             }
-        })
+        }
+
     }
 }
-
-
-
-
-
-
-
-
-
-
-

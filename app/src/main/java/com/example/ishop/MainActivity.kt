@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity() {
     private fun getProducts() {
         val apiclient = Apiclient.buildClient(ApiInterface::class.java)
         val request = apiclient.getProducts()
-        request.enqueue(object : Callback<ProductResponse> {
-            override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
+        request.enqueue(object : Callback<ProductsResponse> {
+            override fun onResponse(call: Call<ProductsResponse>, response: Response<ProductsResponse>) {
                 if (response.isSuccessful) {
                     val products = response.body()?.products
                     if (products != null) {
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
                 Toast.makeText(baseContext, t.message, Toast.LENGTH_LONG).show()
             }
         })
