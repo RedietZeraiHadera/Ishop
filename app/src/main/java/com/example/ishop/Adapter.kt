@@ -1,11 +1,15 @@
-package com.example.ishop
+package com.rosekn.myshop
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Adapter
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.ishop.Apiclient
+import com.example.ishop.ProductsResponse
 import com.example.ishop.databinding.ActivityMainBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,8 +39,8 @@ class MainActivity : AppCompatActivity() {
     private fun getProducts() {
         val apiclient = Apiclient.buildClient(ApiInterface::class.java)
         val request = apiclient.getProducts()
-        request.enqueue(object : Callback<ProductResponse> {
-            override fun onResponse(call: Call<ProductResponse>, response: Response<ProductResponse>) {
+        request.enqueue(object : Callback<ProductsResponse> {
+            override fun onResponse(call: Call<ProductsResponse>, response: Response<ProductsResponse>) {
                 if (response.isSuccessful) {
                     val products = response.body()?.products
                     if (products != null) {
@@ -53,13 +57,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<ProductResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ProductsResponse>, t: Throwable) {
                 Toast.makeText(baseContext, t.message, Toast.LENGTH_LONG).show()
             }
         })
     }
 }
-
 
 
 
